@@ -3,7 +3,6 @@ package com.mouadouad0.kz;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -22,7 +21,7 @@ public class Solo extends AppCompatActivity {
     int line;
     String s;
     int a, b, c, d;
-    Button confirm, replay, back;
+    Button confirm, replay;
     Boolean error = false;
     TextView at1;
     MainGame mainGameClass;
@@ -37,7 +36,7 @@ public class Solo extends AppCompatActivity {
         randomGenerator();
         setConfirmButtons();
         Shared.background(this, this);
-        backButton();
+        Shared.backButton(this, this, Start.class);
         setTextView();
 
         confirm.setOnClickListener(view -> {
@@ -230,31 +229,13 @@ public class Solo extends AppCompatActivity {
 
     public void setError() {
 
-        Error myError = Shared.setError(this, this);
+        Error myError = Shared.setError(this, this, R.drawable.error_box);
         error = true;
         myError.okButton.setOnClickListener(view -> {
             myError.messageBox.setVisibility(View.GONE);
             myError.dimLayout.setVisibility(View.GONE);
             error = false;
         });
-    }
-
-    public void backButton() {
-
-        back = new Button(this);
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setx(100), Shared.sety(100));
-        back.setBackgroundResource(R.drawable.back_button);
-        addContentView(back, layoutParams);
-        back.setY(Shared.sety(50));
-        back.setX(Shared.setx(50));
-        back.setZ(30);
-
-        back.setOnClickListener(view -> {
-
-            Intent intent = new Intent(Solo.this, Start.class);
-            startActivity(intent);
-        });
-
     }
 
     @Override

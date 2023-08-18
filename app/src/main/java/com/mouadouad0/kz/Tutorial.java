@@ -18,7 +18,7 @@ public class Tutorial extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        backButton();
+        Shared.backButton(this, this, Start.class);
 
         //BACKGROUND
         background = new RelativeLayout(this);
@@ -49,23 +49,6 @@ public class Tutorial extends AppCompatActivity {
             page++;
 
 
-        });
-
-    }
-
-    private void backButton() {
-
-        back = new Button(this);
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setx(100), Shared.sety(100));
-        back.setBackgroundResource(R.drawable.back_button);
-        addContentView(back, layoutParams);
-        back.setY(Shared.sety(50));
-        back.setX(Shared.setx(50));
-        back.setZ(30);
-
-        back.setOnClickListener(view -> {
-            Intent intent = new Intent(Tutorial.this, Start.class);
-            startActivity(intent);
         });
 
     }

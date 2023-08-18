@@ -1,9 +1,11 @@
 package com.mouadouad0.kz;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -38,7 +40,7 @@ public class Shared {
         appCompatActivity.addContentView(background, backParams);
     }
 
-    public static Error setError(Context context, AppCompatActivity appCompatActivity) {
+    public static Error setError(Context context, AppCompatActivity appCompatActivity, Integer resource) {
         final RelativeLayout messageBox;
         final Button okButton;
         final FrameLayout dimLayout;
@@ -66,7 +68,7 @@ public class Shared {
         okButton.setY(Shared.sety(300 - 100 - 20));
 
         //BOX
-        messageBox.setBackgroundResource(R.drawable.error_box);
+        messageBox.setBackgroundResource(resource);
         RelativeLayout.LayoutParams layoutParams4 = new RelativeLayout.LayoutParams(Shared.setx(700), Shared.sety(300));
         appCompatActivity.addContentView(messageBox, layoutParams4);
         messageBox.setX(Shared.setx(190));
@@ -74,6 +76,31 @@ public class Shared {
         messageBox.setZ(30);
 
         return new Error(messageBox, okButton, dimLayout);
+    }
+
+    public static void internetError(Context context, AppCompatActivity appCompatActivity) {
+        Error myError = Shared.setError(context, appCompatActivity, R.drawable.internet_box);
+
+        myError.okButton.setOnClickListener(view -> {
+            myError.messageBox.setVisibility(View.GONE);
+            myError.dimLayout.setVisibility(View.GONE);
+
+        });
+    }
+
+    public static void backButton(Context context, AppCompatActivity appCompatActivity, Class<? extends AppCompatActivity> activity) {
+        Button back=new Button(context);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setx(100),Shared.sety(100));
+        back.setBackgroundResource(R.drawable.back_button);
+        appCompatActivity.addContentView(back,layoutParams);
+        back.setY(Shared.sety(50));
+        back.setX(Shared.setx(50));
+        back.setZ(30);
+
+        back.setOnClickListener(view -> {
+            Intent intent=new Intent(context, activity);
+            appCompatActivity.startActivity(intent);
+        });
     }
 }
 

@@ -2,21 +2,16 @@ package com.mouadouad0.kz;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.res.ResourcesCompat;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.ads.AdRequest;
@@ -42,7 +37,6 @@ public class Create extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference lobby;
     String generated = "";
-    Button back;
     SharedPreferences sharedPreferences;
 
     @Override
@@ -50,9 +44,9 @@ public class Create extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         Shared.background(this, this);
-        backButton();
+        Shared.backButton(this, this, MultiMode.class);
         banner();
-        buttons_editText();
+        buttonsEditText();
 
         //INTERNET CHECK
         ConnectivityManager cm = (ConnectivityManager)
@@ -73,7 +67,7 @@ public class Create extends AppCompatActivity {
 
             if (activeNetwork == null) {
 
-                internetError();
+                Shared.internetError(this, this);
             } else {
                 generate();
                 save();
@@ -88,9 +82,7 @@ public class Create extends AppCompatActivity {
         confirm.setOnClickListener(view -> {
 
             if (activeNetwork == null) {
-
-                internetError();
-
+                Shared.internetError(this, this);
             } else if (name_of_lobby.getText().toString().contains(" ") || name_of_lobby.getText().toString().isEmpty() || name_of_lobby.getText().toString().length() > 50) {
 
 
@@ -127,10 +119,9 @@ public class Create extends AppCompatActivity {
             }
         });
 
-
     }
 
-    private void buttons_editText() {
+    private void buttonsEditText() {
         //SET BUTTONS AND EDIT TEXT
         name_of_lobby = new EditText(this);
         confirm = new Button(this);
@@ -244,72 +235,5 @@ public class Create extends AppCompatActivity {
         return result;
     }
 
-    public void backButton() {
 
-        back = new Button(this);
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setx(100), Shared.sety(100));
-        back.setBackgroundResource(R.drawable.back_button);
-        addContentView(back, layoutParams);
-        back.setY(Shared.sety(50));
-        back.setX(Shared.setx(50));
-        back.setZ(30);
-
-        back.setOnClickListener(view -> {
-
-            Intent intent = new Intent(Create.this, MultiMode.class);
-            startActivity(intent);
-        });
-
-    }
-
-    public void internetError() {
-
-        final RelativeLayout message_box;
-        Button ok_button;
-
-        final FrameLayout dim_layout;
-
-        //MAKE THE SCREEN DIM
-        Resources res = getResources();
-        Drawable shape = ResourcesCompat.getDrawable(res, R.drawable.dim, null);
-        dim_layout = new FrameLayout(this);
-        dim_layout.setForeground(shape);
-
-        RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams((int) (Start.width), (int) (Start.height));
-        addContentView(dim_layout, layoutParams1);
-        dim_layout.getForeground().setAlpha(200);
-        dim_layout.setZ(20);
-
-
-        //SETTING THE ERROR MESSAGE
-
-        message_box = new RelativeLayout(this);
-        ok_button = new Button(this);
-
-
-        //BUTTON
-        RelativeLayout.LayoutParams layoutParams3 = new RelativeLayout.LayoutParams(Shared.setx(200), Shared.sety(100));
-        message_box.addView(ok_button, layoutParams3);
-        ok_button.setBackgroundResource(R.drawable.okay_button);
-        ok_button.setX(Shared.setx(250));
-        ok_button.setY(Shared.sety(300 - 100 - 20));
-
-
-        //BOX
-        message_box.setBackgroundResource(R.drawable.internet_box);
-        RelativeLayout.LayoutParams layoutParams4 = new RelativeLayout.LayoutParams(Shared.setx(700), Shared.sety(300));
-        addContentView(message_box, layoutParams4);
-        message_box.setX(Shared.setx((Start.width - 700) / 2));
-        message_box.setY(Shared.sety((Start.height - 300) / 2));
-        message_box.setZ(30);
-
-
-        //ONCLICK BUTTON
-        ok_button.setOnClickListener(view -> {
-            message_box.setVisibility(View.GONE);
-            dim_layout.setVisibility(View.GONE);
-
-        });
-
-    }
 }

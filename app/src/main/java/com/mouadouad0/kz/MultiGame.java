@@ -2,14 +2,11 @@ package com.mouadouad0.kz;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.res.ResourcesCompat;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -49,11 +46,10 @@ public class MultiGame extends AppCompatActivity {
     Button confirm, replay;
     Boolean error = false, played = true, win = false;
     Boolean I_repeat = false, He_repeat = false;
-    Button back;
     TextView at1;
 
-    FrameLayout the_dim_shown;
-    RelativeLayout the_box_shown;
+    FrameLayout theDimShown;
+    RelativeLayout theBoxShown;
     ImageView play_again;
 
     long Time_start = 120000;
@@ -75,7 +71,7 @@ public class MultiGame extends AppCompatActivity {
         setConfirmButton();
         setTimer();
         Shared.background(this, this);
-        backButton();
+        Shared.backButton(this, this, MultiMode.class);
         setTextView();
 
         database = FirebaseDatabase.getInstance();
@@ -503,61 +499,28 @@ public class MultiGame extends AppCompatActivity {
 
     public void showError(Integer resource) {
 
-        showMessage(resource);
-        //SETTING THE ERROR MESSAGE
-        Button ok_button = new Button(this);
-
-        //BUTTON
-        RelativeLayout.LayoutParams layoutParams3 = new RelativeLayout.LayoutParams(Shared.setx(200), Shared.sety(100));
-        the_box_shown.addView(ok_button, layoutParams3);
-        ok_button.setBackgroundResource(R.drawable.okay_button);
-        ok_button.setX(Shared.setx(250));
-        ok_button.setY(Shared.sety(300 - 100 - 20));
+        Error myError = Shared.setError(this, this, resource);
         error = true;
 
-        //ONCLICK BUTTON
-        ok_button.setOnClickListener(view -> {
-            the_box_shown.setVisibility(View.GONE);
-            the_dim_shown.setVisibility(View.GONE);
+        theBoxShown = myError.messageBox;
+        theDimShown = myError.dimLayout;
+
+        myError.okButton.setOnClickListener(view -> {
+            theBoxShown.setVisibility(View.GONE);
+            theDimShown.setVisibility(View.GONE);
             error = false;
         });
 
     }
 
     public void showMessage(Integer resource) {
-        final FrameLayout dim_layout;
         pause();
 
-        //MAKE THE SCREEN DIM
-        Resources res = getResources();
-        Drawable shape = ResourcesCompat.getDrawable(res, R.drawable.dim, null);
-        dim_layout = new FrameLayout(this);
-        dim_layout.setForeground(shape);
+        Error myError = Shared.setError(this, this, resource);
+        repeatButton(myError.messageBox);
 
-        RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams((int) (Start.width), (int) (Start.height));
-        addContentView(dim_layout, layoutParams1);
-        dim_layout.getForeground().setAlpha(200);
-        dim_layout.setZ(20);
-
-
-        //SETTING THE FINISH MESSAGE
-        final RelativeLayout message_box;
-        message_box = new RelativeLayout(this);
-
-        //BOX
-        message_box.setBackgroundResource(resource);
-        RelativeLayout.LayoutParams layoutParams4 = new RelativeLayout.LayoutParams(Shared.setx(700), Shared.sety(300));
-        addContentView(message_box, layoutParams4);
-        message_box.setX(Shared.setx(190));
-        message_box.setY(Shared.sety(735));
-        message_box.setZ(30);
-
-        //ADD REPEAT BUTTON
-        repeatButton(message_box);
-
-        //SET THE SHOWN LAYOUTS
-        the_box_shown = message_box;
-        the_dim_shown = dim_layout;
+        theBoxShown = myError.messageBox;
+        theDimShown = myError.dimLayout;
 
     }
 
@@ -591,22 +554,6 @@ public class MultiGame extends AppCompatActivity {
 
     }
 
-    public void backButton() {
-        back = new Button(this);
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setx(100), Shared.sety(100));
-        back.setBackgroundResource(R.drawable.back_button);
-        addContentView(back, layoutParams);
-        back.setY(Shared.sety(50));
-        back.setX(Shared.setx(50));
-        back.setZ(30);
-
-        back.setOnClickListener(view -> {
-            Intent intent = new Intent(MultiGame.this, MultiMode.class);
-            startActivity(intent);
-            killActivity();
-        });
-
-    }
 
     @Override
     public void onBackPressed() {
