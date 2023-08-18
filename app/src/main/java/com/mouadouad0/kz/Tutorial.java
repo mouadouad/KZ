@@ -1,12 +1,11 @@
 package com.mouadouad0.kz;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 
 public class Tutorial extends AppCompatActivity {
@@ -28,11 +27,11 @@ public class Tutorial extends AppCompatActivity {
 
         //MAKING THE BUTTONS
         next = new Button(this);
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setx(200), Shared.sety(150));
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(200), Shared.setY(150));
         next.setBackgroundResource(R.drawable.next_button);
         addContentView(next, layoutParams);
-        next.setY(Shared.sety(1450));
-        next.setX(Shared.setx(1080 - 200 - 100));
+        next.setY(Shared.setY(1450));
+        next.setX(Shared.setX(1080 - 200 - 100));
 
         next.setOnClickListener(view -> {
 

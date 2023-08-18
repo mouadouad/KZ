@@ -1,7 +1,5 @@
 package com.mouadouad0.kz;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.Typeface;
@@ -12,6 +10,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
@@ -87,35 +87,35 @@ public class Start extends AppCompatActivity {
         //MAKING THE ICON
         icon = new ImageView(this);
         icon.setBackgroundResource(R.drawable.icon);
-        RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(Shared.setx(400), Shared.sety(300));
+        RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(Shared.setX(400), Shared.setY(300));
         addContentView(icon, layoutParams2);
-        icon.setY(Shared.sety(300));
-        icon.setX(Shared.setx(340));
+        icon.setY(Shared.setY(300));
+        icon.setX(Shared.setX(340));
     }
 
     private void makeButtons() {
         //MAKING THE BUTTONS
         multi = new Button(this);
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setx(300), Shared.sety(150));
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(300), Shared.setY(150));
         multi.setBackgroundResource(R.drawable.multi_button);
         addContentView(multi, layoutParams);
-        multi.setY(Shared.sety(1000));
-        multi.setX(Shared.setx(390));
+        multi.setY(Shared.setY(1000));
+        multi.setX(Shared.setX(390));
 
 
         solo = new Button(this);
-        RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams(Shared.setx(300), Shared.sety(150));
+        RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams(Shared.setX(300), Shared.setY(150));
         solo.setBackgroundResource(R.drawable.normal_button);
         addContentView(solo, layoutParams1);
-        solo.setY(Shared.sety(800));
-        solo.setX(Shared.setx(390));
+        solo.setY(Shared.setY(800));
+        solo.setX(Shared.setX(390));
 
         tutorial = new Button(this);
-        RelativeLayout.LayoutParams layoutParams3 = new RelativeLayout.LayoutParams(Shared.setx(250), Shared.sety(150));
+        RelativeLayout.LayoutParams layoutParams3 = new RelativeLayout.LayoutParams(Shared.setX(250), Shared.setY(150));
         tutorial.setBackgroundResource(R.drawable.tuto_button);
         addContentView(tutorial, layoutParams3);
-        tutorial.setY(Shared.sety(100));
-        tutorial.setX(Shared.setx(1080 - 300));
+        tutorial.setY(Shared.setY(100));
+        tutorial.setX(Shared.setX(1080 - 300));
     }
 
     @Override

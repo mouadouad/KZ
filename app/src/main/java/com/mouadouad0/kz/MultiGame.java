@@ -1,8 +1,5 @@
 package com.mouadouad0.kz;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +19,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -173,11 +173,11 @@ public class MultiGame extends AppCompatActivity {
                         replay();
                     } else {
 
-                        RelativeLayout.LayoutParams layoutParams4 = new RelativeLayout.LayoutParams(Shared.setx(700), Shared.sety(180));
+                        RelativeLayout.LayoutParams layoutParams4 = new RelativeLayout.LayoutParams(Shared.setX(700), Shared.setY(180));
                         play_again.setBackgroundResource(R.drawable.play_again_box);
                         addContentView(play_again, layoutParams4);
-                        play_again.setX(Shared.setx(190));
-                        play_again.setY(Shared.sety(505));
+                        play_again.setX(Shared.setX(190));
+                        play_again.setY(Shared.setY(505));
                         play_again.setZ(30);
                     }
                 }
@@ -303,41 +303,41 @@ public class MultiGame extends AppCompatActivity {
 
     public void setConfirmButton() {
 
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setx(400), Shared.sety(150));
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(400), Shared.setY(150));
         confirm = new Button(this);
         ((Activity) this).addContentView(confirm, layoutParams);
         confirm.setBackgroundResource(R.drawable.check_button);
 
         float a;
         a = 1080 - 400 - 100;
-        confirm.setY(Shared.sety(1400));
-        confirm.setX(Shared.setx(a));
+        confirm.setY(Shared.setY(1400));
+        confirm.setX(Shared.setX(a));
 
     }
 
     public void setTextView() {
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setx(660), Shared.sety(550));
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(660), Shared.setY(550));
         at1 = new TextView(this);
         //at1.setBackgroundResource(R.drawable.border);
         at1.setTextSize(Shared.seth(20));
         at1.setTextColor(Color.WHITE);
         at1.setMovementMethod(new ScrollingMovementMethod());
         ((Activity) this).addContentView(at1, layoutParams);
-        at1.setY(Shared.sety(50));
-        at1.setX(Shared.setx(195));
+        at1.setY(Shared.setY(50));
+        at1.setX(Shared.setX(195));
     }
 
     public void setTimer() {
 
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setx(200), Shared.sety(120));
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(200), Shared.setY(120));
         tv = new TextView(this);
         tv.setTextSize(Shared.seth(20));
         tv.setTypeface(Start.fredoka);
         tv.setTextColor(Color.BLACK);
         ((Activity) this).addContentView(tv, layoutParams);
 
-        tv.setY(Shared.sety(1420));
-        tv.setX(Shared.setx(310));
+        tv.setY(Shared.setY(1420));
+        tv.setX(Shared.setX(310));
         tv.setZ(10);
 
     }
@@ -526,13 +526,13 @@ public class MultiGame extends AppCompatActivity {
 
     public void repeatButton(RelativeLayout message_box) {
 
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setx(250), Shared.sety(100));
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(250), Shared.setY(100));
         replay = new Button(this);
         replay.setBackgroundResource(R.drawable.again_button);
         message_box.addView(replay, layoutParams);
 
-        replay.setX(Shared.setx(225));
-        replay.setY(Shared.sety(300 - 100 - 20));
+        replay.setX(Shared.setX(225));
+        replay.setY(Shared.setY(300 - 100 - 20));
 
         replay.setOnClickListener(view -> {
             I_repeat = true;
@@ -553,7 +553,6 @@ public class MultiGame extends AppCompatActivity {
         killActivity();
 
     }
-
 
     @Override
     public void onBackPressed() {

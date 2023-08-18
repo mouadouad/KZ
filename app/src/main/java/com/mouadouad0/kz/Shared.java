@@ -13,13 +13,18 @@ import android.widget.RelativeLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+
 public class Shared {
 
-    public static int setx(float x) {
+    public static int setX(float x) {
         return (int) ((x * Start.width) / 1080);
     }
 
-    public static int sety(float x) {
+    public static int setY(float x) {
         return (int) ((x * Start.height) / 1770);
     }
 
@@ -61,18 +66,18 @@ public class Shared {
         okButton = new Button(context);
 
         //BUTTON
-        RelativeLayout.LayoutParams layoutParams3 = new RelativeLayout.LayoutParams(Shared.setx(200), Shared.sety(100));
+        RelativeLayout.LayoutParams layoutParams3 = new RelativeLayout.LayoutParams(Shared.setX(200), Shared.setY(100));
         messageBox.addView(okButton, layoutParams3);
         okButton.setBackgroundResource(R.drawable.okay_button);
-        okButton.setX(Shared.setx(250));
-        okButton.setY(Shared.sety(300 - 100 - 20));
+        okButton.setX(Shared.setX(250));
+        okButton.setY(Shared.setY(300 - 100 - 20));
 
         //BOX
         messageBox.setBackgroundResource(resource);
-        RelativeLayout.LayoutParams layoutParams4 = new RelativeLayout.LayoutParams(Shared.setx(700), Shared.sety(300));
+        RelativeLayout.LayoutParams layoutParams4 = new RelativeLayout.LayoutParams(Shared.setX(700), Shared.setY(300));
         appCompatActivity.addContentView(messageBox, layoutParams4);
-        messageBox.setX(Shared.setx(190));
-        messageBox.setY(Shared.sety(735));
+        messageBox.setX(Shared.setX(190));
+        messageBox.setY(Shared.setY(735));
         messageBox.setZ(30);
 
         return new Error(messageBox, okButton, dimLayout);
@@ -90,17 +95,45 @@ public class Shared {
 
     public static void backButton(Context context, AppCompatActivity appCompatActivity, Class<? extends AppCompatActivity> activity) {
         Button back=new Button(context);
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setx(100),Shared.sety(100));
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(100),Shared.setY(100));
         back.setBackgroundResource(R.drawable.back_button);
         appCompatActivity.addContentView(back,layoutParams);
-        back.setY(Shared.sety(50));
-        back.setX(Shared.setx(50));
+        back.setY(Shared.setY(50));
+        back.setX(Shared.setX(50));
         back.setZ(30);
 
         back.setOnClickListener(view -> {
             Intent intent=new Intent(context, activity);
             appCompatActivity.startActivity(intent);
         });
+    }
+
+    public static void banner(Context context, AppCompatActivity appCompatActivity) {
+        AdView adView = new AdView(context);
+        adView.setAdSize(AdSize.BANNER);
+        adView.setAdUnitId("ca-app-pub-3922358669029120/2831354657");
+
+        RelativeLayout layout = new RelativeLayout(context);
+        RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams((int) Start.width, (int) Start.height - getStatusBarHeight(appCompatActivity));
+        appCompatActivity.addContentView(layout, layoutParams1);
+
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        layout.addView(adView, layoutParams);
+
+        MobileAds.initialize(context, "ca-app-pub-3922358669029120~3985187056");
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
+    }
+
+    private static int getStatusBarHeight(AppCompatActivity appCompatActivity) {
+        int result = 0;
+        int resourceId = appCompatActivity.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = appCompatActivity.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 }
 

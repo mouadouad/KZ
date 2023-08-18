@@ -39,7 +39,7 @@ public class MainGame extends View {
     }
 
     private void setButtons(Button button) {
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setx(200), Shared.sety(120));
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(200), Shared.setY(120));
         ((Activity) this.context).addContentView(button, layoutParams);
 
     }
@@ -53,18 +53,18 @@ public class MainGame extends View {
         for (int i = 0; i < 11; i++) {
             Button button = new Button(this.context);
             setButtons(button);
-            button.setY(Shared.sety(800 + (int) (i / 3) * 150));
-            button.setX(Shared.setx(195 + (i % 3) * 250));
+            button.setY(Shared.setY(800 + (int) (i / 3) * 150));
+            button.setX(Shared.setX(195 + (i % 3) * 250));
             button.setBackgroundResource(backgrounds.get(i));
             buttons.add(button);
         }
-        buttons.get(9).setX(Shared.setx(310));
-        buttons.get(10).setX(Shared.setx(310 + 200 + 30));
+        buttons.get(9).setX(Shared.setX(310));
+        buttons.get(10).setX(Shared.setX(310 + 200 + 30));
 
     }
 
     private void setEditText() {
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setx(660), Shared.sety(100));
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(660), Shared.setY(100));
         et = new TextView(this.context);
         et.setBackgroundResource(R.drawable.border);
         et.setTextColor(Color.WHITE);
@@ -72,8 +72,8 @@ public class MainGame extends View {
         et.setTextSize(Shared.seth(20));
         et.setTextAlignment(TEXT_ALIGNMENT_CENTER);
         ((Activity) this.context).addContentView(et, layoutParams);
-        et.setY(Shared.sety(650));
-        et.setX(Shared.setx(195));
+        et.setY(Shared.setY(650));
+        et.setX(Shared.setX(195));
     }
 
     private void setButtonsClick() {

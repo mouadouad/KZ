@@ -1,7 +1,5 @@
 package com.mouadouad0.kz;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -13,6 +11,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Random;
 
@@ -87,7 +87,7 @@ public class Solo extends AppCompatActivity {
 
     public void setConfirmButtons() {
 
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setx(400), Shared.sety(150));
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(400), Shared.setY(150));
 
 
         confirm = new Button(this);
@@ -103,11 +103,11 @@ public class Solo extends AppCompatActivity {
         a = 1080 - 400 - 100;
 
 
-        confirm.setY(Shared.sety(1400));
-        confirm.setX(Shared.setx(a));
+        confirm.setY(Shared.setY(1400));
+        confirm.setX(Shared.setX(a));
 
-        replay.setY(Shared.sety(1400));
-        replay.setX(Shared.setx(100));
+        replay.setY(Shared.setY(1400));
+        replay.setX(Shared.setX(100));
 
 
     }
@@ -118,7 +118,7 @@ public class Solo extends AppCompatActivity {
         a = 195;  //(1080-200*3-30*3)/2;
         b = 200 * 3 + 30 * 2;
 
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setx(b), Shared.sety(550));
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(b), Shared.setY(550));
         at1 = new TextView(this);
         // at1.setBackgroundResource(R.drawable.border);
         at1.setTextSize(Shared.seth(20));
@@ -126,8 +126,8 @@ public class Solo extends AppCompatActivity {
         at1.setTypeface(Start.fredoka);
         at1.setMovementMethod(new ScrollingMovementMethod());
         ((Activity) this).addContentView(at1, layoutParams);
-        at1.setY(Shared.sety(50));
-        at1.setX(Shared.setx(a));
+        at1.setY(Shared.setY(50));
+        at1.setX(Shared.setX(a));
 
 
     }
