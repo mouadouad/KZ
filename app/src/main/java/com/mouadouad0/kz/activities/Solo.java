@@ -1,4 +1,4 @@
-package com.mouadouad0.kz;
+package com.mouadouad0.kz.activities;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -13,6 +13,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.mouadouad0.kz.Error;
+import com.mouadouad0.kz.MainGame;
+import com.mouadouad0.kz.R;
+import com.mouadouad0.kz.Shared;
 
 import java.util.Random;
 

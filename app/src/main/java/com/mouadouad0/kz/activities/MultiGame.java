@@ -1,4 +1,4 @@
-package com.mouadouad0.kz;
+package com.mouadouad0.kz.activities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -28,6 +28,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.mouadouad0.kz.Error;
+import com.mouadouad0.kz.MainGame;
+import com.mouadouad0.kz.R;
+import com.mouadouad0.kz.Shared;
 
 import java.util.Locale;
 import java.util.Objects;

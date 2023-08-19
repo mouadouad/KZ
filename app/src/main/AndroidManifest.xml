@@ -15,28 +15,28 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3922358669029120~3985187056"/>
         <activity
-            android:name=".Tutorial"
+            android:name=".activities.Tutorial"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".MultiGame"
+            android:name=".activities.MultiGame"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Waiting"
+            android:name=".activities.Waiting"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Join"
+            android:name=".activities.Join"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Create"
+            android:name=".activities.Create"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".MultiMode"
+            android:name=".activities.MultiMode"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Solo"
+            android:name=".activities.Solo"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Start"
+            android:name=".activities.Start"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

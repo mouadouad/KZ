@@ -1,4 +1,4 @@
-package com.mouadouad0.kz;
+package com.mouadouad0.kz.activities;
 
 import android.content.Intent;
 import android.graphics.Point;
@@ -15,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
+import com.mouadouad0.kz.R;
+import com.mouadouad0.kz.Shared;
 
 
 public class Start extends AppCompatActivity {

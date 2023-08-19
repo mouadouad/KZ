@@ -10,6 +10,8 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.mouadouad0.kz.activities.Start;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

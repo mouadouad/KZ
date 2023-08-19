@@ -1,4 +1,4 @@
-package com.mouadouad0.kz;
+package com.mouadouad0.kz.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
+import com.mouadouad0.kz.R;
+import com.mouadouad0.kz.Shared;
 
 public class MultiMode extends AppCompatActivity {
 

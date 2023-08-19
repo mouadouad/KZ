@@ -1,4 +1,4 @@
-package com.mouadouad0.kz;
+package com.mouadouad0.kz.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +22,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.mouadouad0.kz.R;
+import com.mouadouad0.kz.Shared;
 
 public class Waiting extends AppCompatActivity {
 
