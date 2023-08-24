@@ -13,8 +13,6 @@ import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
 import com.mouadouad0.kz.R;
 import com.mouadouad0.kz.Shared;
 
@@ -24,7 +22,7 @@ public class Start extends AppCompatActivity {
     public static float width, height;
     Button solo, multi, tutorial;
     ImageView icon;
-    InterstitialAd mInterstitialAd;
+    //InterstitialAd mInterstitialAd;
     public static Typeface fredoka;
 
     @Override
@@ -47,9 +45,9 @@ public class Start extends AppCompatActivity {
                 "FredokaOne-Regular.ttf");
         
         //ADD INTERSTITIAL
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3922358669029120/9714465383");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        //mInterstitialAd = new InterstitialAd(this);
+        //mInterstitialAd.setAdUnitId("ca-app-pub-3922358669029120/9714465383");
+        //mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
         //ONCLICK BUTTONS
         solo.setOnClickListener(view -> {
@@ -58,8 +56,6 @@ public class Start extends AppCompatActivity {
         });
 
         multi.setOnClickListener(view -> {
-
-
             Intent intent = new Intent(Start.this, MultiMode.class);
             startActivity(intent);
             //mInterstitialAd.show();

@@ -10,8 +10,6 @@ import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
 import com.mouadouad0.kz.R;
 import com.mouadouad0.kz.Shared;
 
@@ -88,11 +86,11 @@ public class MultiMode extends AppCompatActivity {
 
     public void backButton() {
 
-        final InterstitialAd mInterstitialAd;
-        //ADD INTERSTITIAL
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3922358669029120/9714465383");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+//        final InterstitialAd mInterstitialAd;
+//        //ADD INTERSTITIAL
+//        mInterstitialAd = new InterstitialAd(this);
+//        mInterstitialAd.setAdUnitId("ca-app-pub-3922358669029120/9714465383");
+//        mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
         back = new Button(this);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(100), Shared.setY(100));
@@ -103,27 +101,26 @@ public class MultiMode extends AppCompatActivity {
         back.setZ(30);
 
         back.setOnClickListener(view -> {
-
             Intent intent = new Intent(MultiMode.this, Start.class);
             startActivity(intent);
             finish();
-            mInterstitialAd.show();
+            //mInterstitialAd.show();
         });
 
     }
 
     @Override
     public void onBackPressed() {
-        InterstitialAd mInterstitialAd;
-        //ADD INTERSTITIAL
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3922358669029120/9714465383");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+//        InterstitialAd mInterstitialAd;
+//        //ADD INTERSTITIAL
+//        mInterstitialAd = new InterstitialAd(this);
+//        mInterstitialAd.setAdUnitId("ca-app-pub-3922358669029120/9714465383");
+//        mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
         Intent intent = new Intent(MultiMode.this, Start.class);
         startActivity(intent);
         finish();
-        mInterstitialAd.show();
+        //mInterstitialAd.show();
 
     }
 }

@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -17,6 +18,8 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.mouadouad0.kz.activities.Start;
 
 public class Shared {
@@ -123,7 +126,13 @@ public class Shared {
         layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
         layout.addView(adView, layoutParams);
 
-        MobileAds.initialize(context, "ca-app-pub-3922358669029120~3985187056");
+        MobileAds.initialize(context, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
+            }
+        });
+
+        //MobileAds.initialize(context, "ca-app-pub-3922358669029120~3985187056");
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
     }

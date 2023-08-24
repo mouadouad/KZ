@@ -16,7 +16,9 @@
             android:value="ca-app-pub-3922358669029120~3985187056"/>
         <activity
             android:name=".activities.Tutorial"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait">
+
+        </activity>
         <activity
             android:name=".activities.MultiGame"
             android:screenOrientation="portrait" />
@@ -37,7 +39,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.Start"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -84,7 +84,7 @@ public class MultiGame extends AppCompatActivity {
         play_again = new ImageView(this);
 
         //SEE WHICH PLAYER
-        if (intent.getStringExtra(who_key).equals("create")) {
+        if (Objects.equals(intent.getStringExtra(who_key), "create")) {
 
             my_player = database.getReference(MultiMode.name).child("player1");
             his_player = database.getReference(MultiMode.name).child("player2");
