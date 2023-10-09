@@ -100,7 +100,6 @@ public class Start extends AppCompatActivity {
         multi.setY(Shared.setY(1000));
         multi.setX(Shared.setX(390));
 
-
         solo = new Button(this);
         RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams(Shared.setX(300), Shared.setY(150));
         solo.setBackgroundResource(R.drawable.normal_button);
