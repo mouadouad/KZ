@@ -9,6 +9,21 @@ public class Digits {
         number[2] = c;
         number[3] = d;
     }
+
+    public Digits(String entry){
+        final int entryInteger = Integer.parseInt(entry);
+        int a, b, c, d;
+
+        a = entryInteger / 1000;
+        b = (entryInteger % 1000) / 100;
+        c = (entryInteger / 10) - 100 * a - 10 * b;
+        d = entryInteger - 10 * (100 * a + 10 * b + c);
+
+        number[0] = a;
+        number[1] = b;
+        number[2] = c;
+        number[3] = d;
+    }
     
     public int getDigit(int index) {
         return number[index];

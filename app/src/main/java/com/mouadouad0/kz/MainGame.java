@@ -1,103 +1,163 @@
 package com.mouadouad0.kz;
 
-import android.app.Activity;
-import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Color;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.mouadouad0.kz.activities.Start;
+import java.util.Random;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+public class MainGame {
+    final static int LINE_LENGTH = 14;
+    private Digits correctAnswer;
+    private int correct, misplaced, lineCounter;
+    private Boolean error = false;
+    private String entry, correction;
+    final private MainGameView mainGameView;
 
-
-public class MainGame extends View {
-
-    Context context;
-    final List<Button> buttons = new ArrayList<>();
-    private TextView et;
-
-    public MainGame(Context context) {
-        super(context);
-        this.context = context;
+    public MainGame(MainGameView mainGameView) {
+        this.mainGameView = mainGameView;
+        randomGenerator();
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        setKeyboard();
-        setEditText();
-        setButtonsClick();
+    public void reset() {
+        lineCounter = 0;
+        mainGameView.getGameText().setText("");
+        mainGameView.getEditText().setText("");
+        randomGenerator();
     }
 
-    public TextView getEditText() {
-        return et;
-    }
+    private void randomGenerator() {
+        final Random rand = new Random();
+        int a, b, c, d;
 
-    private void setButtons(Button button) {
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(200), Shared.setY(120));
-        ((Activity) this.context).addContentView(button, layoutParams);
+        a = rand.nextInt(10);
+        b = rand.nextInt(10);
+        c = rand.nextInt(10);
+        d = rand.nextInt(10);
 
-    }
-
-    private void setKeyboard() {
-        final List<Integer> backgrounds = Arrays.asList(R.drawable.button_1, R.drawable.button_2,
-                R.drawable.button_3, R.drawable.button_4, R.drawable.button_5, R.drawable.button_6,
-                R.drawable.button_7, R.drawable.button_8, R.drawable.button_9, R.drawable.button_0,
-                R.drawable.del_button);
-
-        for (int i = 0; i < 11; i++) {
-            Button button = new Button(this.context);
-            setButtons(button);
-            button.setY(Shared.setY(800 + (int) (i / 3) * 150));
-            button.setX(Shared.setX(195 + (i % 3) * 250));
-            button.setBackgroundResource(backgrounds.get(i));
-            buttons.add(button);
+        while (b == a) {
+            b = rand.nextInt(10);
         }
-        buttons.get(9).setX(Shared.setX(310));
-        buttons.get(10).setX(Shared.setX(310 + 200 + 30));
-
-    }
-
-    private void setEditText() {
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(660), Shared.setY(100));
-        et = new TextView(this.context);
-        et.setBackgroundResource(R.drawable.border);
-        et.setTextColor(Color.WHITE);
-        et.setTypeface(Start.fredoka);
-        et.setTextSize(Shared.seth(20));
-        et.setTextAlignment(TEXT_ALIGNMENT_CENTER);
-        ((Activity) this.context).addContentView(et, layoutParams);
-        et.setY(Shared.setY(650));
-        et.setX(Shared.setX(195));
-    }
-
-    private void setButtonsClick() {
-
-        for (int i = 1; i < 11; i++) {
-            final String s = String.valueOf(i % 10);
-            buttons.get(i - 1).setOnClickListener(view -> et.append(s));
+        while (c == a || c == b) {
+            c = rand.nextInt(10);
+        }
+        while (d == a || d == b || d == c) {
+            d = rand.nextInt(10);
         }
 
-        buttons.get(10).setOnClickListener(view -> {
-            String r1 = et.getText().toString();
-            EditText et1 = new EditText(context);
+        correctAnswer = new Digits(a, b, c, d);
 
-            if (r1.isEmpty()) {
-                et.setText("");
-            } else {
-                et1.setText(r1);
-                et1.setText(et1.getText().delete(et1.getText().length() - 1, et1.getText().length()));
-                et.setText(et1.getText());
+        System.out.println(a);
+        System.out.println(b);
+        System.out.println(c);
+        System.out.println(d);
+    }
+
+    public void checkEntry() {
+        entry = mainGameView.getEditText().getText().toString();
+
+        if (entry.isEmpty()) {
+            setError();
+        } else if (entry.length() != 4) {
+            setError();
+        } else {
+            checkAnswer();
+            correct = 0; misplaced = 0;
+        }
+        //SCROLL TO THE LAST OF THE TEXTVIEW
+        final int scrollAmount = mainGameView.getGameText().getLayout().getLineTop(mainGameView.getGameText().getLineCount()) - mainGameView.getGameText().getHeight();
+        mainGameView.getGameText().scrollTo(0, Math.max(scrollAmount, 0));
+    }
+
+    private void checkAnswer() {
+        final Digits answer = new Digits(entry);
+
+        if (answer.isNotValid()) {
+            setError();
+        } else if (answer.equals(correctAnswer)) {
+            answerIsCorrect();
+        } else {
+            correctAnswer(answer);
+        }
+    }
+
+    private void answerIsCorrect() {
+        lineCounter++;
+        correction = "Correct";
+        setGameLine(Color.GREEN);
+    }
+
+    private void correctAnswer(Digits answer) {
+        for(int i = 0; i < 4; i++){
+            checkDigit(answer.getDigit(i), i);
+        }
+        setCorrectionString();
+        lineCounter++;
+
+        setGameLine(Color.RED);
+    }
+
+    private void checkDigit(int digit, int digitIndex) {
+        if (digit == correctAnswer.getDigit(digitIndex)) {
+            correct++;
+        } else {
+            for (int i = 1; i < 4; i++) {
+                if (digit == correctAnswer.getDigit((digitIndex + i) % 4)) {
+                    misplaced++;
+                }
             }
-        });
+        }
+    }
 
+    private void setCorrectionString() {
+        if (correct != 0 && misplaced != 0) {
+            String j = String.valueOf(correct);
+            String m = String.valueOf(misplaced);
+            correction = j + "J" + m + "M";
+        } else if (correct == 0 && misplaced == 0) {
+            correction = "----";
+        } else if (correct == 0) {
+            String m = String.valueOf(misplaced);
+            correction = m + "M";
+        } else {
+            String j = String.valueOf(correct);
+            correction = j + "J";
+        }
+    }
+
+    private void setGameLine(int color) {
+        final String gameLine = " " + lineCounter + "--" + entry + "       " + correction + "\n";
+
+        mainGameView.getGameText().append(colorLine(gameLine, color));
+        mainGameView.getEditText().setText("");
+    }
+
+    private SpannableString colorLine(String gameLine, int color){
+        final SpannableString ss = new SpannableString(gameLine);
+        ForegroundColorSpan correctionColor = new ForegroundColorSpan(color);
+
+        ss.setSpan(correctionColor, LINE_LENGTH + String.valueOf(lineCounter).length(), LINE_LENGTH +
+                String.valueOf(lineCounter).length() + correction.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ForegroundColorSpan black = new ForegroundColorSpan(Color.parseColor("#F5A623"));//104AA8
+        ss.setSpan(black, 0, 3 + String.valueOf(lineCounter).length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        return ss;
+    }
+
+    private void setError() {
+        Error myError = mainGameView.setError();
+        error = true;
+        myError.okButton.setOnClickListener(view -> {
+            myError.messageBox.setVisibility(View.GONE);
+            myError.dimLayout.setVisibility(View.GONE);
+            error = false;
+        });
+    }
+
+    public Boolean isNotError(){
+        return !error;
     }
 
 }

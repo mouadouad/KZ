@@ -29,7 +29,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mouadouad0.kz.Error;
-import com.mouadouad0.kz.MainGame;
+import com.mouadouad0.kz.MainGameView;
 import com.mouadouad0.kz.R;
 import com.mouadouad0.kz.Shared;
 
@@ -39,41 +39,39 @@ import java.util.Random;
 
 public class MultiGame extends AppCompatActivity {
 
-    public final static String who_key = "com.mouad0.hp.snake.who_key";
+    public final static String WHO_KEY = "com.mouad0.hp.snake.who_key";
 
     FirebaseDatabase database;
-    DatabaseReference my_player, his_player;
-
+    DatabaseReference myPlayer, hisPlayer;
     int line;
     String s;
     int a, b, c, d;
     Button confirm, replay;
+    Boolean timeIsFinished = false;
     Boolean error = false, played = true, win = false;
-    Boolean I_repeat = false, He_repeat = false;
+    Boolean IWantRepeat = false, HeWantRepeat = false;
     TextView at1;
-
     FrameLayout theDimShown;
     RelativeLayout theBoxShown;
-    ImageView play_again;
-
-    long Time_start = 120000;
-    TextView tv;
+    ImageView playAgain;
+    static final long TIME_START = 120000;
+    TextView timerTextView;
     CountDownTimer timer;
-    private long left = Time_start;
-    MediaPlayer time_finished;
+    private long timeLeft = TIME_START;
+    MediaPlayer timeFinishedSound;
 
     ConnectivityManager cm;
-    MainGame main_game_class;
+    MainGameView mainGameView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        main_game_class = new MainGame(this);
-        setContentView(main_game_class);
+        mainGameView = new MainGameView(this);
+        setContentView(mainGameView);
 
         setConfirmButton();
-        setTimer();
+        setTimerParams();
         Shared.background(this, this);
         Shared.backButton(this, this, MultiMode.class);
         setTextView();
@@ -81,18 +79,18 @@ public class MultiGame extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         Intent intent = getIntent();
 
-        play_again = new ImageView(this);
+        playAgain = new ImageView(this);
 
         //SEE WHICH PLAYER
-        if (Objects.equals(intent.getStringExtra(who_key), "create")) {
+        if (Objects.equals(intent.getStringExtra(WHO_KEY), "create")) {
 
-            my_player = database.getReference(MultiMode.name).child("player1");
-            his_player = database.getReference(MultiMode.name).child("player2");
+            myPlayer = database.getReference(MultiMode.name).child("player1");
+            hisPlayer = database.getReference(MultiMode.name).child("player2");
 
         } else {
 
-            his_player = database.getReference(MultiMode.name).child("player1");
-            my_player = database.getReference(MultiMode.name).child("player2");
+            hisPlayer = database.getReference(MultiMode.name).child("player1");
+            myPlayer = database.getReference(MultiMode.name).child("player2");
         }
 
         startAndRandoms();
@@ -114,15 +112,15 @@ public class MultiGame extends AppCompatActivity {
                         if (!error) {
                             //IF I HAD IT RIGHT OR NOT
                             if (win) {
-                                my_player.child("ready").setValue("2");
+                                myPlayer.child("ready").setValue("2");
                             } else {
-                                my_player.child("ready").setValue("1");
+                                myPlayer.child("ready").setValue("1");
                             }
 
                             played = false;
                             pause();
 
-                            his_player.child("ready").addValueEventListener(new ValueEventListener() {
+                            hisPlayer.child("ready").addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -130,7 +128,7 @@ public class MultiGame extends AppCompatActivity {
 
                                         if (Objects.equals(dataSnapshot.getValue(String.class), "1")) { //IF HE PLAYED AND HAD IT WRONG
                                             played = true;
-                                            his_player.child("ready").setValue("0");
+                                            hisPlayer.child("ready").setValue("0");
                                             reset();
 
                                             if (win) {
@@ -166,23 +164,23 @@ public class MultiGame extends AppCompatActivity {
         });
 
         //SEE IF WANT TO REPEAT
-        his_player.child("repeat").addValueEventListener(new ValueEventListener() {
+        hisPlayer.child("repeat").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 if (Objects.equals(dataSnapshot.getValue(String.class), "1")) {//HE WANTS TO REPLAY
-                    He_repeat = true;
+                    HeWantRepeat = true;
 
-                    if (I_repeat) { // I ALREADY WANT TO REPLAY
+                    if (IWantRepeat) { // I ALREADY WANT TO REPLAY
                         replay();
                     } else {
 
                         RelativeLayout.LayoutParams layoutParams4 = new RelativeLayout.LayoutParams(Shared.setX(700), Shared.setY(180));
-                        play_again.setBackgroundResource(R.drawable.play_again_box);
-                        addContentView(play_again, layoutParams4);
-                        play_again.setX(Shared.setX(190));
-                        play_again.setY(Shared.setY(505));
-                        play_again.setZ(30);
+                        playAgain.setBackgroundResource(R.drawable.play_again_box);
+                        addContentView(playAgain, layoutParams4);
+                        playAgain.setX(Shared.setX(190));
+                        playAgain.setY(Shared.setY(505));
+                        playAgain.setZ(30);
                     }
                 }
             }
@@ -193,16 +191,13 @@ public class MultiGame extends AppCompatActivity {
             }
         });
 
-        //START TIMER
-        startT();
-
-
+        startTimer();
     }
 
     public void startAndRandoms() {
 
-        // SEE WHO ENTRED FIRST AND GIVE RANDOMS
-        my_player.child("side").addListenerForSingleValueEvent(new ValueEventListener() {
+        // SEE WHO ENTERED FIRST AND GIVE RANDOMS
+        myPlayer.child("side").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -214,18 +209,17 @@ public class MultiGame extends AppCompatActivity {
                     randomGenerator();
 
                     //SEND RANDOMS
-                    his_player.child("rana").setValue(a);
-                    his_player.child("ranb").setValue(b);
-                    his_player.child("ranc").setValue(c);
-                    his_player.child("rand").setValue(d);
+                    hisPlayer.child("rana").setValue(a);
+                    hisPlayer.child("ranb").setValue(b);
+                    hisPlayer.child("ranc").setValue(c);
+                    hisPlayer.child("rand").setValue(d);
 
                     //I ENTRED FIRST
-                    his_player.child("side").setValue("1");
+                    hisPlayer.child("side").setValue("1");
 
                 } else {
-
                     //RETRIEVE RANDOMS
-                    my_player.child("rana").addListenerForSingleValueEvent(new ValueEventListener() {
+                    myPlayer.child("rana").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             a = dataSnapshot.getValue(Integer.class);
@@ -236,7 +230,7 @@ public class MultiGame extends AppCompatActivity {
 
                         }
                     });
-                    my_player.child("ranb").addListenerForSingleValueEvent(new ValueEventListener() {
+                    myPlayer.child("ranb").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             b = dataSnapshot.getValue(Integer.class);
@@ -247,7 +241,7 @@ public class MultiGame extends AppCompatActivity {
 
                         }
                     });
-                    my_player.child("ranc").addListenerForSingleValueEvent(new ValueEventListener() {
+                    myPlayer.child("ranc").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             c = dataSnapshot.getValue(Integer.class);
@@ -258,7 +252,7 @@ public class MultiGame extends AppCompatActivity {
 
                         }
                     });
-                    my_player.child("rand").addListenerForSingleValueEvent(new ValueEventListener() {
+                    myPlayer.child("rand").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             d = dataSnapshot.getValue(Integer.class);
@@ -306,17 +300,15 @@ public class MultiGame extends AppCompatActivity {
     }
 
     public void setConfirmButton() {
-
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(400), Shared.setY(150));
         confirm = new Button(this);
-        ((Activity) this).addContentView(confirm, layoutParams);
+        this.addContentView(confirm, layoutParams);
         confirm.setBackgroundResource(R.drawable.check_button);
 
         float a;
         a = 1080 - 400 - 100;
         confirm.setY(Shared.setY(1400));
         confirm.setX(Shared.setX(a));
-
     }
 
     public void setTextView() {
@@ -331,29 +323,25 @@ public class MultiGame extends AppCompatActivity {
         at1.setX(Shared.setX(195));
     }
 
-    public void setTimer() {
-
+    public void setTimerParams() {
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(200), Shared.setY(120));
-        tv = new TextView(this);
-        tv.setTextSize(Shared.seth(20));
-        tv.setTypeface(Start.fredoka);
-        tv.setTextColor(Color.BLACK);
-        ((Activity) this).addContentView(tv, layoutParams);
-
-        tv.setY(Shared.setY(1420));
-        tv.setX(Shared.setX(310));
-        tv.setZ(10);
-
+        timerTextView = new TextView(this);
+        timerTextView.setTextSize(Shared.seth(20));
+        timerTextView.setTypeface(Start.fredoka);
+        timerTextView.setTextColor(Color.BLACK);
+        ((Activity) this).addContentView(timerTextView, layoutParams);
+        timerTextView.setY(Shared.setY(1420));
+        timerTextView.setX(Shared.setX(310));
+        timerTextView.setZ(10);
     }
 
-    public void startT() {
-        timer = (new CountDownTimer(left, 1000) {
+    public void startTimer() {
+        timer = (new CountDownTimer(timeLeft, 1000) {
             @Override
             public void onTick(long l) {
-                left = l;
+                timeLeft = l;
                 update();
             }
-
             @Override
             public void onFinish() {
             }
@@ -361,54 +349,53 @@ public class MultiGame extends AppCompatActivity {
 
     }
 
-    public void update() {
-        int min = (int) ((left / 1000) / 60);
-        int sec = (int) (left / 1000) % 60;
+    private void updateTimer() {
+        int min = (int) ((timeLeft / 1000) / 60);
+        int sec = (int) (timeLeft / 1000) % 60;
         String time = String.format(Locale.getDefault(), "%02d:%02d", min, sec);
-        tv.setText(time);
+        timerTextView.setText(time);
+        timeIsFinished = min <= 0 && sec <= 1;
+    }
 
-
-        if (min <= 0 && sec <= 1) { //IF TIME FINISHED
-
-            my_player.child("ready").setValue("1");
+    public void update() {
+        updateTimer();
+        if (timeIsFinished) { //IF TIME FINISHED
+            myPlayer.child("ready").setValue("1");
             line++;
-
-            his_player.child("ready").addListenerForSingleValueEvent(new ValueEventListener() {
+            hisPlayer.child("ready").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                     if (Objects.equals(dataSnapshot.getValue(String.class), "2")) { // SEE IF LOST
                         showMessage(R.drawable.lost_box);
                     } else {
-                        his_player.child("ready").setValue("0"); //RESET
+                        hisPlayer.child("ready").setValue("0"); //RESET
                         reset();
                     }
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
                 }
             });
-
         }
     }
 
     public void pause() {
         timer.cancel();
-
     }
 
     public void reset() {
         timer.cancel();
-        left = Time_start;
-        startT();
-        time_finished = MediaPlayer.create(this, R.raw.time_start_sound);
-        time_finished.start();
+        timeLeft = TIME_START;
+        timeIsFinished = false;
+        startTimer();
+        timeFinishedSound = MediaPlayer.create(this, R.raw.time_start_sound);
+        timeFinishedSound.start();
     }
 
     public void checkAnswer() {
-        String r1 = main_game_class.getEditText().getText().toString();
+        String r1 = mainGameView.getEditText().getText().toString();
 
         if (r1.isEmpty()) {
             showError(R.drawable.error_box);
@@ -439,7 +426,7 @@ public class MultiGame extends AppCompatActivity {
                 ss.setSpan(black, 0, 3 + String.valueOf(line).length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
                 at1.append(ss);
-                main_game_class.getEditText().setText("");
+                mainGameView.getEditText().setText("");
 
             } else {
                 if (a1 == a) {
@@ -492,7 +479,7 @@ public class MultiGame extends AppCompatActivity {
                 ss.setSpan(black, 0, 3 + String.valueOf(line).length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
                 at1.append(ss);
-                main_game_class.getEditText().setText("");
+                mainGameView.getEditText().setText("");
             }
         }
 
@@ -502,7 +489,6 @@ public class MultiGame extends AppCompatActivity {
     }
 
     public void showError(Integer resource) {
-
         Error myError = Shared.setError(this, this, resource);
         error = true;
 
@@ -514,22 +500,20 @@ public class MultiGame extends AppCompatActivity {
             theDimShown.setVisibility(View.GONE);
             error = false;
         });
-
     }
 
     public void showMessage(Integer resource) {
         pause();
 
         Error myError = Shared.setError(this, this, resource);
-        repeatButton(myError.messageBox);
+        setReplayButton(myError.messageBox);
 
         theBoxShown = myError.messageBox;
         theDimShown = myError.dimLayout;
 
     }
 
-    public void repeatButton(RelativeLayout message_box) {
-
+    public void setReplayButton(RelativeLayout message_box) {
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(250), Shared.setY(100));
         replay = new Button(this);
         replay.setBackgroundResource(R.drawable.again_button);
@@ -539,20 +523,18 @@ public class MultiGame extends AppCompatActivity {
         replay.setY(Shared.setY(300 - 100 - 20));
 
         replay.setOnClickListener(view -> {
-            I_repeat = true;
-            my_player.child("repeat").setValue("1");
-
-            if (I_repeat && He_repeat) { //SEE IF HE ALREADY WANTS TO REPLAY
+            IWantRepeat = true;
+            myPlayer.child("repeat").setValue("1");
+            if (IWantRepeat && HeWantRepeat) { //SEE IF HE ALREADY WANTS TO REPLAY
                 replay();
             }
         });
     }
 
     public void replay() {
-
         Intent intent1 = getIntent();
         Intent intent = new Intent(MultiGame.this, Waiting.class);
-        intent.putExtra(who_key, intent1.getStringExtra(who_key));
+        intent.putExtra(WHO_KEY, intent1.getStringExtra(WHO_KEY));
         startActivity(intent);
         killActivity();
 
@@ -573,6 +555,6 @@ public class MultiGame extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        main_game_class.getEditText().setText("");
+        mainGameView.getEditText().setText("");
     }
 }
