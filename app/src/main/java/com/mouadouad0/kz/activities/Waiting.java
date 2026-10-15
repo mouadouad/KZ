@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.view.Gravity;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -47,7 +48,7 @@ public class Waiting extends AppCompatActivity {
             return;
         }
 
-        Shared.fitSystemBars(this);
+        Shared.setUpScreen(this);
         Shared.background(this, this);
         Shared.banner(this, this);
 
@@ -69,23 +70,24 @@ public class Waiting extends AppCompatActivity {
         play.setX(Shared.setX(400));
 
         //SET THE NAME OF THE LOBBY
-        RelativeLayout.LayoutParams layoutParams3 = new RelativeLayout.LayoutParams(Shared.setX(600), RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams layoutParams3 = new RelativeLayout.LayoutParams(Shared.setX(1080), RelativeLayout.LayoutParams.WRAP_CONTENT);
         addContentView(lobbyName, layoutParams3);
-        lobbyName.setTextSize(Shared.setX(24));
+        Shared.setTextSize(lobbyName, 72);
+        lobbyName.setGravity(Gravity.CENTER_HORIZONTAL);
 
         String prefix = getString(R.string.name_lobby);
         String st1 = prefix + MultiMode.name;
 
         SpannableString ss = new SpannableString(st1);
-        ForegroundColorSpan red = new ForegroundColorSpan(Color.BLACK);
-        ss.setSpan(red, 0, prefix.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        ForegroundColorSpan black = new ForegroundColorSpan(Color.parseColor("#104AA8"));
-        ss.setSpan(black, prefix.length(), st1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ForegroundColorSpan labelColor = new ForegroundColorSpan(Color.WHITE);
+        ss.setSpan(labelColor, 0, prefix.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ForegroundColorSpan nameColor = new ForegroundColorSpan(Color.parseColor("#F5A623"));
+        ss.setSpan(nameColor, prefix.length(), st1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         lobbyName.setText(ss);
         lobbyName.setY(Shared.setY(800));
-        lobbyName.setX(Shared.setX(400));
-        lobbyName.setTypeface(Start.fredoka);
+        lobbyName.setX(0);
+        lobbyName.setTypeface(Shared.fredoka);
 
         //TO SEE IF CREATED OR JOINED
         if (a.getStringExtra(who_key).equals("create")) {

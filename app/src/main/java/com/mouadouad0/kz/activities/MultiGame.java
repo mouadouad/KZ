@@ -72,7 +72,7 @@ public class MultiGame extends AppCompatActivity {
 
         main_game_class = new MainGame(this);
         setContentView(main_game_class);
-        Shared.fitSystemBars(this);
+        Shared.setUpScreen(this);
 
         setConfirmButton();
         setTimer();
@@ -306,8 +306,9 @@ public class MultiGame extends AppCompatActivity {
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(660), Shared.setY(550));
         at1 = new TextView(this);
         //at1.setBackgroundResource(R.drawable.border);
-        at1.setTextSize(Shared.seth(20));
+        Shared.setTextSize(at1, 60);
         at1.setTextColor(Color.WHITE);
+        at1.setTypeface(Shared.fredoka);
         at1.setMovementMethod(new ScrollingMovementMethod());
         ((Activity) this).addContentView(at1, layoutParams);
         at1.setY(Shared.setY(50));
@@ -318,9 +319,9 @@ public class MultiGame extends AppCompatActivity {
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(200), Shared.setY(120));
         tv = new TextView(this);
-        tv.setTextSize(Shared.seth(20));
-        tv.setTypeface(Start.fredoka);
-        tv.setTextColor(Color.BLACK);
+        Shared.setTextSize(tv, 60);
+        tv.setTypeface(Shared.fredoka);
+        tv.setTextColor(Color.WHITE);
         ((Activity) this).addContentView(tv, layoutParams);
 
         tv.setY(Shared.setY(1420));

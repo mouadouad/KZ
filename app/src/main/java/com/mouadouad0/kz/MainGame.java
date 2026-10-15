@@ -75,8 +75,8 @@ public class MainGame extends View {
         et = new TextView(this.context);
         et.setBackgroundResource(R.drawable.border);
         et.setTextColor(Color.WHITE);
-        et.setTypeface(Start.fredoka);
-        et.setTextSize(Shared.seth(20));
+        et.setTypeface(Shared.fredoka);
+        Shared.setTextSize(et, 60);
         et.setTextAlignment(TEXT_ALIGNMENT_CENTER);
         ((Activity) this.context).addContentView(et, layoutParams);
         et.setY(Shared.setY(650));

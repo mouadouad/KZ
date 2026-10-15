@@ -4,13 +4,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
+import android.text.InputFilter;
+import android.text.InputType;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
@@ -24,24 +33,28 @@ import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.mouadouad0.kz.activities.Start;
 
 public class Shared {
 
+    public static float width, height;
+    public static Typeface fredoka;
+
     public static int setX(float x) {
-        return (int) ((x * Start.width) / 1080);
+        return (int) ((x * width) / 1080);
     }
 
     public static int setY(float x) {
-        return (int) ((x * Start.height) / 1770);
+        return (int) ((x * height) / 1770);
     }
 
     public static int seth(float h) {
-        float width = Start.width;
-        float height = Start.height;
         float hypotenuse = (int) Math.sqrt(width * width + height * height);
 
         return (int) ((h * hypotenuse) / 2074);
+    }
+
+    public static void setTextSize(TextView textView, float size) {
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, seth(size));
     }
 
     public static boolean isOnline(Context context) {
@@ -76,11 +89,33 @@ public class Shared {
         });
     }
 
+    public static void styleLobbyInput(EditText editText) {
+        editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        editText.setSingleLine(true);
+        editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        editText.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(50)});
+        editText.setHint(R.string.lobby_hint);
+        editText.setHintTextColor(Color.parseColor("#80FFFFFF"));
+        editText.setTextColor(Color.WHITE);
+        editText.setTypeface(fredoka);
+        editText.setGravity(Gravity.CENTER);
+    }
+
     public static boolean isValidLobbyName(String name) {
         return name.length() <= 50 && name.matches("[^\\s.#$\\[\\]/]+");
     }
 
-    public static void fitSystemBars(AppCompatActivity appCompatActivity) {
+    public static void setUpScreen(AppCompatActivity appCompatActivity) {
+        if (width == 0 || height == 0) {
+            Point size = new Point();
+            appCompatActivity.getWindowManager().getDefaultDisplay().getSize(size);
+            width = size.x;
+            height = size.y;
+        }
+        if (fredoka == null) {
+            fredoka = Typeface.createFromAsset(appCompatActivity.getAssets(), "FredokaOne-Regular.ttf");
+        }
+
         View content = appCompatActivity.findViewById(android.R.id.content);
         ViewCompat.setOnApplyWindowInsetsListener(content, (view, windowInsets) -> {
             Insets bars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
@@ -108,8 +143,9 @@ public class Shared {
         Drawable shape = ResourcesCompat.getDrawable(res, R.drawable.dim, null);
         dimLayout = new FrameLayout(context);
         dimLayout.setForeground(shape);
+        dimLayout.setClickable(true);
 
-        RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams((int) (Start.width), (int) (Start.height));
+        RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams((int) width, (int) height);
         appCompatActivity.addContentView(dimLayout, layoutParams1);
         dimLayout.getForeground().setAlpha(200);
         dimLayout.setZ(20);

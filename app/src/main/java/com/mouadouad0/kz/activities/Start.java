@@ -1,10 +1,7 @@
 package com.mouadouad0.kz.activities;
 
 import android.content.Intent;
-import android.graphics.Point;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.view.Display;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -20,31 +17,19 @@ import com.mouadouad0.kz.Shared;
 
 public class Start extends AppCompatActivity {
 
-    public static float width, height;
     Button solo, multi, tutorial;
     ImageView icon;
-    public static Typeface fredoka;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Shared.fitSystemBars(this);
+        Shared.setUpScreen(this);
         MobileAds.initialize(this);
-
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        width = size.x;
-        height = size.y;
 
         Shared.background(this, this);
         makeButtons();
         makeIcon();
         animate();
-
-        //FONT
-        fredoka = Typeface.createFromAsset(getAssets(),
-                "FredokaOne-Regular.ttf");
 
         //ONCLICK BUTTONS
         solo.setOnClickListener(view -> {

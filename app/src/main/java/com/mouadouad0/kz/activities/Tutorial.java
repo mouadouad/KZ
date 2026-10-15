@@ -20,7 +20,7 @@ public class Tutorial extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Shared.fitSystemBars(this);
+        Shared.setUpScreen(this);
         Shared.backButton(this, this, Start.class);
 
         //BACKGROUND

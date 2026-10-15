@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Kz</string>
     <string name="name_lobby">Name of Lobby : </string>
+    <string name="lobby_hint">Lobby name</string>
 </resources>

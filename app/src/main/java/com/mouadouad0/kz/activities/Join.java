@@ -1,7 +1,6 @@
 package com.mouadouad0.kz.activities;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,7 +28,7 @@ public class Join extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Shared.fitSystemBars(this);
+        Shared.setUpScreen(this);
         Shared.background(this, this);
         Shared.backButton(this, this, MultiMode.class);
         Shared.banner(this, this);
@@ -42,8 +41,7 @@ public class Join extends AppCompatActivity {
 
         lobbyName.setY(Shared.setY(200));
         lobbyName.setX(Shared.setX(400));
-        lobbyName.setTextColor(Color.WHITE);
-        lobbyName.setTypeface(Start.fredoka);
+        Shared.styleLobbyInput(lobbyName);
 
         RelativeLayout.LayoutParams layoutParams3 = new RelativeLayout.LayoutParams(Shared.setX(300),Shared.setY(150));
         addContentView(confirm,layoutParams3);

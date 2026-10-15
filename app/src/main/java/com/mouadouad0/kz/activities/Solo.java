@@ -37,7 +37,7 @@ public class Solo extends AppCompatActivity {
 
         mainGameClass = new MainGame(this);
         setContentView(mainGameClass);
-        Shared.fitSystemBars(this);
+        Shared.setUpScreen(this);
 
         randomGenerator();
         setConfirmButtons();
@@ -53,15 +53,19 @@ public class Solo extends AppCompatActivity {
 
         replay.setOnClickListener(view -> {
             if (!error) {
-                line = 0;
-                randomGenerator();
-                at1.setText("");
-                if (mainGameClass.getEditText() != null) {
-                    mainGameClass.getEditText().setText("");
-                }
+                newGame();
             }
         });
 
+    }
+
+    private void newGame() {
+        line = 0;
+        randomGenerator();
+        at1.setText("");
+        if (mainGameClass.getEditText() != null) {
+            mainGameClass.getEditText().setText("");
+        }
     }
 
     public void randomGenerator() {
@@ -124,9 +128,9 @@ public class Solo extends AppCompatActivity {
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(b), Shared.setY(550));
         at1 = new TextView(this);
         // at1.setBackgroundResource(R.drawable.border);
-        at1.setTextSize(Shared.seth(20));
+        Shared.setTextSize(at1, 60);
         at1.setTextColor(Color.WHITE);
-        at1.setTypeface(Start.fredoka);
+        at1.setTypeface(Shared.fredoka);
         at1.setMovementMethod(new ScrollingMovementMethod());
         ((Activity) this).addContentView(at1, layoutParams);
         at1.setY(Shared.setY(50));
@@ -167,6 +171,7 @@ public class Solo extends AppCompatActivity {
 
                 at1.append(ss);
                 mainGameClass.getEditText().setText("");
+                showMessage(R.drawable.win_box, this::newGame);
 
             } else {
                 if (a1 == a) {
@@ -233,13 +238,18 @@ public class Solo extends AppCompatActivity {
     }
 
     public void setError() {
+        showMessage(R.drawable.error_box, () -> { });
+    }
 
-        Error myError = Shared.setError(this, this, R.drawable.error_box);
+    private void showMessage(int resource, Runnable onOk) {
+
+        Error myError = Shared.setError(this, this, resource);
         error = true;
         myError.okButton.setOnClickListener(view -> {
             myError.messageBox.setVisibility(View.GONE);
             myError.dimLayout.setVisibility(View.GONE);
             error = false;
+            onOk.run();
         });
     }
 

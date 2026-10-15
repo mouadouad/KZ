@@ -28,7 +28,7 @@ public class MultiMode extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Shared.fitSystemBars(this);
+        Shared.setUpScreen(this);
         Shared.background(this, this);
         backButton();
         Shared.banner(this, this);
