@@ -1,17 +1,20 @@
 package com.mouadouad0.kz.activities;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.mouadouad0.kz.R;
 import com.mouadouad0.kz.Shared;
 
@@ -20,15 +23,16 @@ public class MultiMode extends AppCompatActivity {
     Button create, join;
     public static String name;
     Button back;
-    NetworkInfo activeNetwork;
+    InterstitialAd interstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Shared.fitSystemBars(this);
         Shared.background(this, this);
         backButton();
         Shared.banner(this, this);
-        
+
         create = new Button(this);
         join = new Button(this);
 
@@ -50,49 +54,58 @@ public class MultiMode extends AppCompatActivity {
 
 
         //INTERNET CHECK
-        ConnectivityManager cm = (ConnectivityManager)
-                this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        assert cm != null;
-        activeNetwork = cm.getActiveNetworkInfo();
-
-        if (activeNetwork == null) {
+        if (!Shared.isOnline(this)) {
             Shared.internetError(this, this);
         }
 
 
         create.setOnClickListener(view -> {
 
-            if (activeNetwork == null) {
+            if (!Shared.isOnline(this)) {
                 Shared.internetError(this, this);
             } else {
-                Intent i = new Intent(MultiMode.this, Create.class);
-                startActivity(i);
+                Shared.signIn(() -> startActivity(new Intent(MultiMode.this, Create.class)),
+                        () -> Shared.internetError(this, this));
             }
 
         });
 
         join.setOnClickListener(view -> {
 
-            if (activeNetwork == null) {
+            if (!Shared.isOnline(this)) {
                 Shared.internetError(this, this);
             } else {
-                Intent i = new Intent(MultiMode.this, Join.class);
-                startActivity(i);
+                Shared.signIn(() -> startActivity(new Intent(MultiMode.this, Join.class)),
+                        () -> Shared.internetError(this, this));
             }
 
 
         });
 
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                leave();
+            }
+        });
 
     }
 
     public void backButton() {
 
-        final InterstitialAd mInterstitialAd;
         //ADD INTERSTITIAL
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3922358669029120/9714465383");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        InterstitialAd.load(this, "ca-app-pub-3922358669029120/9714465383", new AdRequest.Builder().build(),
+                new InterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(@NonNull InterstitialAd ad) {
+                        interstitialAd = ad;
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        interstitialAd = null;
+                    }
+                });
 
         back = new Button(this);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(Shared.setX(100), Shared.setY(100));
@@ -102,28 +115,28 @@ public class MultiMode extends AppCompatActivity {
         back.setX(Shared.setX(50));
         back.setZ(30);
 
-        back.setOnClickListener(view -> {
-
-            Intent intent = new Intent(MultiMode.this, Start.class);
-            startActivity(intent);
-            finish();
-            mInterstitialAd.show();
-        });
+        back.setOnClickListener(view -> leave());
 
     }
 
-    @Override
-    public void onBackPressed() {
-        InterstitialAd mInterstitialAd;
-        //ADD INTERSTITIAL
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3922358669029120/9714465383");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+    private void leave() {
+        if (interstitialAd == null) {
+            Shared.navigateBack(this, Start.class);
+            return;
+        }
 
-        Intent intent = new Intent(MultiMode.this, Start.class);
-        startActivity(intent);
-        finish();
-        mInterstitialAd.show();
+        interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+            @Override
+            public void onAdDismissedFullScreenContent() {
+                Shared.navigateBack(MultiMode.this, Start.class);
+            }
 
+            @Override
+            public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+                Shared.navigateBack(MultiMode.this, Start.class);
+            }
+        });
+        interstitialAd.show(this);
+        interstitialAd = null;
     }
 }

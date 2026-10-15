@@ -22,6 +22,7 @@ public class MainGame extends View {
     Context context;
     final List<Button> buttons = new ArrayList<>();
     private TextView et;
+    private boolean initialized;
 
     public MainGame(Context context) {
         super(context);
@@ -31,6 +32,10 @@ public class MainGame extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        if (initialized) {
+            return;
+        }
+        initialized = true;
         setKeyboard();
         setEditText();
         setButtonsClick();

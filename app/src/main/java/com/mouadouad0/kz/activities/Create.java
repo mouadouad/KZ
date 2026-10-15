@@ -1,11 +1,8 @@
 package com.mouadouad0.kz.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mouadouad0.kz.R;
 import com.mouadouad0.kz.Shared;
@@ -32,7 +28,6 @@ public class Create extends AppCompatActivity {
 
     EditText lobbyName;
     Button confirm, generate;
-    FirebaseDatabase database;
     DatabaseReference lobby;
     String generated = "";
     SharedPreferences sharedPreferences;
@@ -40,17 +35,12 @@ public class Create extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Shared.fitSystemBars(this);
 
         Shared.background(this, this);
         Shared.backButton(this, this, MultiMode.class);
         Shared.banner(this, this);
         buttonsEditText();
-
-        //INTERNET CHECK
-        ConnectivityManager cm = (ConnectivityManager)
-                this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        assert cm != null;
-        final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 
         //DELETE LAST LOBBY
         sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
@@ -58,30 +48,25 @@ public class Create extends AppCompatActivity {
         assert last_lobby != null;
         if (!last_lobby.equals("")) {
 
-            database.getReference(last_lobby).removeValue();
+            Shared.lobby(last_lobby).removeValue();
         }
 
         generate.setOnClickListener(view -> {
 
-            if (activeNetwork == null) {
+            if (!Shared.isOnline(this)) {
 
                 Shared.internetError(this, this);
             } else {
                 generate();
-                save();
-
-                Intent intent = new Intent(Create.this, Waiting.class);
-                intent.putExtra(who_key, "create");
-                startActivity(intent);
             }
 
         });
 
         confirm.setOnClickListener(view -> {
 
-            if (activeNetwork == null) {
+            if (!Shared.isOnline(this)) {
                 Shared.internetError(this, this);
-            } else if (lobbyName.getText().toString().contains(" ") || lobbyName.getText().toString().isEmpty() || lobbyName.getText().toString().length() > 50) {
+            } else if (!Shared.isValidLobbyName(lobbyName.getText().toString())) {
 
 
                 lobbyName.setError("Please choose another lobby");
@@ -91,8 +76,8 @@ public class Create extends AppCompatActivity {
 
                 MultiMode.name = lobbyName.getText().toString();
 
-                lobby = database.getReference(MultiMode.name);
-                lobby.child("player1").child("ready").addListenerForSingleValueEvent(new ValueEventListener() {
+                lobby = Shared.lobby(MultiMode.name);
+                lobby.child("owner").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -124,7 +109,6 @@ public class Create extends AppCompatActivity {
         lobbyName = new EditText(this);
         confirm = new Button(this);
         generate = new Button(this);
-        database = FirebaseDatabase.getInstance();
 
         RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(Shared.setX(300), Shared.setY(150));
         addContentView(lobbyName, layoutParams2);
@@ -179,16 +163,23 @@ public class Create extends AppCompatActivity {
         }
 
 
-        MultiMode.name = generated;
+        final String candidate = generated;
 
-        lobby = database.getReference(MultiMode.name);
-        lobby.child("player1").child("ready").addListenerForSingleValueEvent(new ValueEventListener() {
+        lobby = Shared.lobby(candidate);
+        lobby.child("owner").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                if (!dataSnapshot.exists()) {
+                if (dataSnapshot.exists()) {
 
                     generate();
+                } else {
+                    MultiMode.name = candidate;
+                    save();
+
+                    Intent intent = new Intent(Create.this, Waiting.class);
+                    intent.putExtra(who_key, "create");
+                    startActivity(intent);
                 }
 
             }

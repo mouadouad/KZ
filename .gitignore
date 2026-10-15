@@ -12,3 +12,11 @@
 /captures
 .externalNativeBuild
 .cxx
+*.apk
+*.aab
+/app/debug
+/app/release
+/.kotlin
+/.firebase
+firebase-debug.log
+database-debug.log

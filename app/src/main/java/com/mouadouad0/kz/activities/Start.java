@@ -13,8 +13,7 @@ import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 import com.mouadouad0.kz.R;
 import com.mouadouad0.kz.Shared;
 
@@ -24,13 +23,14 @@ public class Start extends AppCompatActivity {
     public static float width, height;
     Button solo, multi, tutorial;
     ImageView icon;
-    InterstitialAd mInterstitialAd;
     public static Typeface fredoka;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+        Shared.fitSystemBars(this);
+        MobileAds.initialize(this);
+
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -45,11 +45,6 @@ public class Start extends AppCompatActivity {
         //FONT
         fredoka = Typeface.createFromAsset(getAssets(),
                 "FredokaOne-Regular.ttf");
-        
-        //ADD INTERSTITIAL
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3922358669029120/9714465383");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
         //ONCLICK BUTTONS
         solo.setOnClickListener(view -> {
@@ -62,7 +57,6 @@ public class Start extends AppCompatActivity {
 
             Intent intent = new Intent(Start.this, MultiMode.class);
             startActivity(intent);
-            //mInterstitialAd.show();
 
         });
         tutorial.setOnClickListener(view -> {
@@ -118,12 +112,6 @@ public class Start extends AppCompatActivity {
         addContentView(tutorial, layoutParams3);
         tutorial.setY(Shared.setY(100));
         tutorial.setX(Shared.setX(1080 - 300));
-    }
-
-    @Override
-    public void onBackPressed() {
-        finish();
-        moveTaskToBack(true);
     }
 
 }

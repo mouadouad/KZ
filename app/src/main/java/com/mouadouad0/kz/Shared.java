@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -12,11 +14,16 @@ import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.mouadouad0.kz.activities.Start;
 
 public class Shared {
@@ -35,6 +42,51 @@ public class Shared {
         float hypotenuse = (int) Math.sqrt(width * width + height * height);
 
         return (int) ((h * hypotenuse) / 2074);
+    }
+
+    public static boolean isOnline(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm == null) {
+            return false;
+        }
+        NetworkCapabilities capabilities = cm.getNetworkCapabilities(cm.getActiveNetwork());
+        return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+    }
+
+    public static DatabaseReference lobby(String name) {
+        return FirebaseDatabase.getInstance().getReference("lobbies").child(name);
+    }
+
+    public static String uid() {
+        return FirebaseAuth.getInstance().getUid();
+    }
+
+    public static void signIn(Runnable onSignedIn, Runnable onFailure) {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() != null) {
+            onSignedIn.run();
+            return;
+        }
+        auth.signInAnonymously().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                onSignedIn.run();
+            } else {
+                onFailure.run();
+            }
+        });
+    }
+
+    public static boolean isValidLobbyName(String name) {
+        return name.length() <= 50 && name.matches("[^\\s.#$\\[\\]/]+");
+    }
+
+    public static void fitSystemBars(AppCompatActivity appCompatActivity) {
+        View content = appCompatActivity.findViewById(android.R.id.content);
+        ViewCompat.setOnApplyWindowInsetsListener(content, (view, windowInsets) -> {
+            Insets bars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            view.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+            return WindowInsetsCompat.CONSUMED;
+        });
     }
 
     public static void background(Context context, AppCompatActivity appCompatActivity) {
@@ -103,10 +155,14 @@ public class Shared {
         back.setX(Shared.setX(50));
         back.setZ(30);
 
-        back.setOnClickListener(view -> {
-            Intent intent=new Intent(context, activity);
-            appCompatActivity.startActivity(intent);
-        });
+        back.setOnClickListener(view -> navigateBack(appCompatActivity, activity));
+    }
+
+    public static void navigateBack(AppCompatActivity appCompatActivity, Class<? extends AppCompatActivity> activity) {
+        Intent intent = new Intent(appCompatActivity, activity);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        appCompatActivity.startActivity(intent);
+        appCompatActivity.finish();
     }
 
     public static void banner(Context context, AppCompatActivity appCompatActivity) {
@@ -115,7 +171,7 @@ public class Shared {
         adView.setAdUnitId("ca-app-pub-3922358669029120/2831354657");
 
         RelativeLayout layout = new RelativeLayout(context);
-        RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams((int) Start.width, (int) Start.height - getStatusBarHeight(appCompatActivity));
+        RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         appCompatActivity.addContentView(layout, layoutParams1);
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -123,18 +179,8 @@ public class Shared {
         layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
         layout.addView(adView, layoutParams);
 
-        MobileAds.initialize(context, "ca-app-pub-3922358669029120~3985187056");
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
-    }
-
-    private static int getStatusBarHeight(AppCompatActivity appCompatActivity) {
-        int result = 0;
-        int resourceId = appCompatActivity.getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            result = appCompatActivity.getResources().getDimensionPixelSize(resourceId);
-        }
-        return result;
     }
 }
 

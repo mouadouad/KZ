@@ -1,11 +1,8 @@
 package com.mouadouad0.kz.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -14,16 +11,19 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mouadouad0.kz.R;
 import com.mouadouad0.kz.Shared;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Waiting extends AppCompatActivity {
 
@@ -31,8 +31,8 @@ public class Waiting extends AppCompatActivity {
     public final static String SHARED_PREFS = "shared_prefs";
     public final static String stars_sharedPREFS = "lobby";
 
-    FirebaseDatabase database;
     DatabaseReference lobby;
+    ValueEventListener joinedListener;
     Boolean joined = false;
     Button play;
     TextView lobbyName;
@@ -41,13 +41,19 @@ public class Waiting extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (MultiMode.name == null) {
+            Shared.navigateBack(this, MultiMode.class);
+            return;
+        }
+
+        Shared.fitSystemBars(this);
         Shared.background(this, this);
         Shared.banner(this, this);
-        
+
         final Intent a = getIntent();
 
-        database = FirebaseDatabase.getInstance();
-        lobby = database.getReference(MultiMode.name);
+        lobby = Shared.lobby(MultiMode.name);
 
         play = new Button(this);
         lobbyName = new TextView(this);
@@ -67,68 +73,55 @@ public class Waiting extends AppCompatActivity {
         addContentView(lobbyName, layoutParams3);
         lobbyName.setTextSize(Shared.setX(24));
 
-        String st1 = getString(R.string.name_lobby) + MultiMode.name;
+        String prefix = getString(R.string.name_lobby);
+        String st1 = prefix + MultiMode.name;
 
         SpannableString ss = new SpannableString(st1);
         ForegroundColorSpan red = new ForegroundColorSpan(Color.BLACK);
-        ss.setSpan(red, 0, 15, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ss.setSpan(red, 0, prefix.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         ForegroundColorSpan black = new ForegroundColorSpan(Color.parseColor("#104AA8"));
-        ss.setSpan(black, 15, 15 + MultiMode.name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ss.setSpan(black, prefix.length(), st1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         lobbyName.setText(ss);
         lobbyName.setY(Shared.setY(800));
         lobbyName.setX(Shared.setX(400));
         lobbyName.setTypeface(Start.fredoka);
 
-        //INTERNET CHECK
-        ConnectivityManager cm = (ConnectivityManager)
-                this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        assert cm != null;
-        final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-
-
         //TO SEE IF CREATED OR JOINED
         if (a.getStringExtra(who_key).equals("create")) {
 
 
-            lobby.child("player1").child("ready").setValue("0");
-            lobby.child("player1").child("side").setValue("0");
-            lobby.child("player1").child("repeat").setValue("0");
-            lobby.child("player2").child("ready").setValue("0");
-            lobby.child("player2").child("side").setValue("0");
-            lobby.child("player2").child("repeat").setValue("0");
+            Map<String, Object> reset = new HashMap<>();
+            reset.put("owner", Shared.uid());
+            for (String player : new String[]{"player1", "player2"}) {
+                reset.put(player + "/ready", "0");
+                reset.put(player + "/side", "0");
+                reset.put(player + "/repeat", "0");
+            }
 
-
-            lobby.child("joined").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    if (dataSnapshot.exists()) {
-
-                        play.setBackgroundResource(R.drawable.play_on_button);
-                        joined = true;
-
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
+            lobby.updateChildren(reset, (databaseError, databaseReference) -> {
+                if (databaseError != null) {
+                    Shared.navigateBack(this, MultiMode.class);
+                } else if (!isFinishing()) {
+                    listenForGuest();
                 }
             });
 
 
         } else {
 
-            lobby.child("joined").setValue(1);
+            lobby.child("guest").setValue(Shared.uid(), (databaseError, databaseReference) -> {
+                if (databaseError != null) {
+                    Shared.navigateBack(this, MultiMode.class);
+                }
+            });
             play.setBackgroundResource(R.drawable.play_on_button);
 
         }
 
         play.setOnClickListener(view -> {
 
-            if (activeNetwork == null) {
+            if (!Shared.isOnline(this)) {
 
                 Shared.internetError(this, this);
             } else {
@@ -138,17 +131,47 @@ public class Waiting extends AppCompatActivity {
                         Intent intent = new Intent(Waiting.this, MultiGame.class);
                         intent.putExtra(who_key, "create");
                         startActivity(intent);
+                        finish();
                     }
 
                 } else {
                     Intent intent = new Intent(Waiting.this, MultiGame.class);
                     intent.putExtra(who_key, "join");
                     startActivity(intent);
+                    finish();
 
                 }
             }
         });
 
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                leave();
+            }
+        });
+
+    }
+
+    private void listenForGuest() {
+        joinedListener = lobby.child("guest").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.exists()) {
+
+                    play.setBackgroundResource(R.drawable.play_on_button);
+                    joined = true;
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void backButton() {
@@ -161,46 +184,31 @@ public class Waiting extends AppCompatActivity {
         back.setX(Shared.setX(50));
         back.setZ(30);
 
-        back.setOnClickListener(view -> {
-
-            //DELETE THE LOBBY IF AM CREATOR
-            final Intent a = getIntent();
-            if (a.getStringExtra(who_key).equals("create")) {
-
-                SharedPreferences sharedPreferences;
-                sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-                String last_lobby = sharedPreferences.getString(stars_sharedPREFS, "");
-                assert last_lobby != null;
-                if (!last_lobby.equals("")) {
-
-                    database.getReference(last_lobby).removeValue();
-                }
-            }
-            Intent intent = new Intent(Waiting.this, MultiMode.class);
-            startActivity(intent);
-        });
+        back.setOnClickListener(view -> leave());
 
     }
 
-    @Override
-    public void onBackPressed() {
+    private void leave() {
 
         //DELETE THE LOBBY IF AM CREATOR
-        final Intent a = getIntent();
-        if (a.getStringExtra(who_key).equals("create")) {
+        if (getIntent().getStringExtra(who_key).equals("create")) {
 
-            SharedPreferences sharedPreferences;
-            sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+            SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
             String last_lobby = sharedPreferences.getString(stars_sharedPREFS, "");
-            assert last_lobby != null;
-            if (!last_lobby.equals("")) {
+            if (!last_lobby.isEmpty()) {
 
-                database.getReference(last_lobby).removeValue();
+                Shared.lobby(last_lobby).removeValue();
             }
         }
-        Intent intent = new Intent(Waiting.this, MultiMode.class);
-        startActivity(intent);
+        Shared.navigateBack(this, MultiMode.class);
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (joinedListener != null) {
+            lobby.child("guest").removeEventListener(joinedListener);
+        }
     }
 
 }

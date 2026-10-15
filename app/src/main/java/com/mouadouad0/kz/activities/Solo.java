@@ -37,6 +37,7 @@ public class Solo extends AppCompatActivity {
 
         mainGameClass = new MainGame(this);
         setContentView(mainGameClass);
+        Shared.fitSystemBars(this);
 
         randomGenerator();
         setConfirmButtons();
@@ -55,7 +56,9 @@ public class Solo extends AppCompatActivity {
                 line = 0;
                 randomGenerator();
                 at1.setText("");
-                mainGameClass.getEditText().setText("");
+                if (mainGameClass.getEditText() != null) {
+                    mainGameClass.getEditText().setText("");
+                }
             }
         });
 
@@ -82,11 +85,6 @@ public class Solo extends AppCompatActivity {
         while (d == a || d == b || d == c) {
             d = rand.nextInt(10);
         }
-
-        System.out.println(a);
-        System.out.println(b);
-        System.out.println(c);
-        System.out.println(d);
 
     }
 
@@ -227,8 +225,10 @@ public class Solo extends AppCompatActivity {
         }
 
         //SCROLL TO THE LAST OF THE TEXTVIEW
-        final int scrollAmount = at1.getLayout().getLineTop(at1.getLineCount()) - at1.getHeight();
-        at1.scrollTo(0, Math.max(scrollAmount, 0));
+        if (at1.getLayout() != null) {
+            final int scrollAmount = at1.getLayout().getLineTop(at1.getLineCount()) - at1.getHeight();
+            at1.scrollTo(0, Math.max(scrollAmount, 0));
+        }
 
     }
 
@@ -246,6 +246,8 @@ public class Solo extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        mainGameClass.getEditText().setText("");
+        if (mainGameClass.getEditText() != null) {
+            mainGameClass.getEditText().setText("");
+        }
     }
 }
